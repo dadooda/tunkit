@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+
+#
+# Monitor remote semaphore, run the control script accordingly.
+#
+# NOTE: This is a "chunky Bash" script.
+#
+
+# Get script name & path.
+SN=${0##*/}
+SP=${0%/*}
+
+# Set strict mode.
+set -u -o pipefail
+
+# Data directory.
+DATA="${SP}/${SN}-data"
+
+# WARNING! Cd to data directory and stay there.
+cd "${DATA}" || exit 1
+
+#--------------------------------------- Configuration
+
+. conf.sh || exit 1
+
+#--------------------------------------- Functions
+
+check_ctl() {
+  if [ ! -x "${C_CTL}" ]; then
+    echo "Error: Control script not found: ${C_CTL}" >&2
+    return 1
+  fi
+
+  return 0
+}
+
+# Return controlled script value. 0 -- running, 1 -- stopped, 2 -- error.
+get_ctl_status() {
+  if is_debug; then
+    # NOTE: Here and around: prepend `./` to the script to make execution always possible, including current dir.
+    ./${C_CTL} status
+  else
+    ./${C_CTL} status >&/dev/null
+  fi
+
+  case $? in
+  0) return 0 ;;
+  1) return 1 ;;
+  *)
+    error "Error: Unknown ${C_CTL} error code: $?" >&2
+    return 2
+  esac
+}
+
+# Return semaphore status. 0 -- on, 1 -- off, 2 -- error.
+get_sema_status() {
+  if is_debug; then
+    (set -x; curl -f "${C_SEMA}")
+  else
+    curl -fs "${C_SEMA}"
+  fi
+
+  case $? in
+  0) return 0 ;;
+  22) return 1 ;;
+  *)
+    echo "Error: Unknown Curl error code: $?" >&2
+    return 2
+  esac
+}
+
+# Return 0 if debugging is enabled.
+is_debug() {
+  [ "${DEBUG:-}" = "!" ]
+}
+
+# Return 0 if running in sillytest mode.
+is_sillytest() {
+  [ "${SILLYTEST:-}" = "!" ]
+}
+
+# DEBUG: Print result.
+# $1: (optional) Label.
+pr() {
+  echo "pr(): label:${1:-} res:$?"
+}
+
+sleep_error() {
+  sleep 5
+}
+
+sleep_loop() {
+  sleep ${C_PAUSE}
+}
+
+# Sleep for a while for things to settle after a state transition.
+sleep_settle() {
+  sleep 2
+}
+
+#--------------------------------------- Sillytest
+
+sillytest() {
+  true
+
+  get_ctl_status
+  pr "get_ctl_status"
+
+  get_sema_status
+  pr "get_sema_status"
+}
+
+#--------------------------------------- Main
+
+if is_sillytest; then
+  echo "Sillytest start"
+  sillytest
+  echo "Sillytest end"
+  exit 1
+fi
+
+main() {
+  check_ctl || return 1
+
+  echo "Entering loop, refreshing every ${C_PAUSE} sec"
+  ./${C_CTL} status      # Report current status visually.
+  while true; do
+    get_ctl_status
+    local CTL_STATUS=$?
+    is_debug && echo "(debug) CTL_STATUS:${CTL_STATUS}"
+
+    get_sema_status
+    local SEMA_STATUS=$?
+    is_debug && echo "(debug) SEMA_STATUS:${SEMA_STATUS}"
+
+    local PAIR_STATUS="${CTL_STATUS}:${SEMA_STATUS}"
+
+    case ${PAIR_STATUS} in
+    "0:0"|"1:1")
+      # No transition.
+      true
+      ;;
+    "1:0")
+      ./${C_CTL} start
+      sleep_settle
+      ;;
+    "0:1")
+      ./${C_CTL} stop
+      sleep_settle
+      ;;
+    *)
+      echo "Error: Invalid PAIR_STATUS: '${PAIR_STATUS}'" >&2
+    esac
+
+    sleep_loop
+  done
+}
+
+main

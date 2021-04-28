@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+#
+# Set up SOCKS tunnel over SSH, interactively.
+#
+
+# Get script name & path.
+SN=${0##*/}
+SP=${0%/*}
+
+# Set strict mode.
+set -u -o pipefail
+
+# Data directory.
+DATA="${SP}/${SN}-data"
+
+# WARNING! Cd to data directory and stay there.
+cd "${DATA}" || exit 1
+
+#--------------------------------------- Configuration
+
+. conf.sh || exit 1
+
+#--------------------------------------- Functions
+
+check_key() {
+  if [ ! -r "${C_KEY}" ]; then
+    echo "Error: SSH key not found: ${C_KEY}" >&2
+    return 1
+  fi
+
+  return 0
+}
+
+# Return 0 if debugging is enabled.
+is_debug() {
+  [ "${DEBUG:-}" = "!" ]
+}
+
+#--------------------------------------- Main
+
+main() {
+  check_key || return 1
+
+  # AutoSSH mode.
+  AM=(
+    # No monitoring.
+    -M 0
+  )
+
+  # SSH options.
+  O=(
+    -i ${C_KEY}
+    -D 0.0.0.0:${C_PORT}
+    -C -N   # Compress, no shell.
+
+    # Connection params.
+    -o "ServerAliveInterval 5"
+    -o "ServerAliveCountMax 2"
+  )
+
+  if is_debug; then
+    O+=( -v )
+  else
+    O+=( -q )
+  fi
+
+  echo "Running AutoSSH in the foreground"
+  is_debug && set -x
+  autossh "${AM[@]}" ${C_USER}@${C_HOST} "${O[@]}"
+}
+
+main

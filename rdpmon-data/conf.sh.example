@@ -1,0 +1,9 @@
+
+#
+# Copy this file to `conf.sh` and edit appropriately.
+#
+
+C_SEMA="http://site.isp.com/path/to/semaphore"
+
+C_CTL="../rdpctl"
+C_PAUSE="5"

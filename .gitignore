@@ -1,0 +1,10 @@
+
+# Old etc.
+*.old*
+*.orig
+/*.patch
+*.ref*
+
+# Project-specific.
+/*-data/*
+!/*-data/conf.sh.example
