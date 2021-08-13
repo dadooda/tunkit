@@ -47,7 +47,7 @@ get_ctl_status() {
   0) return 0 ;;
   1) return 1 ;;
   *)
-    error "Error: Unknown ${C_CTL} error code: $?" >&2
+    terr "Unknown ${C_CTL} error code: $?"
     return 2
   esac
 }
@@ -64,7 +64,7 @@ get_sema_status() {
   0) return 0 ;;
   22) return 1 ;;
   *)
-    echo "Error: Unknown Curl error code: $?" >&2
+    terr "Unknown Curl error code: $?"
     return 2
   esac
 }
@@ -85,6 +85,11 @@ pr() {
   echo "pr(): label:${1:-} res:$?"
 }
 
+# Print a uniform timestamp prefix.
+print_ts() {
+  echo -n "[`date +"%Y-%m-%d %H:%M:%S"`]"
+}
+
 sleep_error() {
   sleep 5
 }
@@ -98,10 +103,29 @@ sleep_settle() {
   sleep 2
 }
 
+# Print a timestamped debug message.
+tdebug() {
+  is_debug && tmsg "Debug: $@"
+}
+
+# Print a timestamped error message.
+terr() {
+  tmsg "Error: $@"
+}
+
+# Print a timestamped message.
+tmsg() {
+  echo `print_ts` "$@"
+}
+
 #--------------------------------------- Sillytest
 
 sillytest() {
   true
+
+  tmsg wan "tew  free"
+  terr phore "5  6"
+  tdebug zeven "oight  neighn"
 
   get_ctl_status
   pr "get_ctl_status"
@@ -122,16 +146,16 @@ fi
 main() {
   check_ctl || return 1
 
-  echo "Entering loop, refreshing every ${C_PAUSE} sec"
+  tmsg "Entering loop, refreshing every ${C_PAUSE} sec"
   ./${C_CTL} status      # Report current status visually.
   while true; do
     get_ctl_status
     local CTL_STATUS=$?
-    is_debug && echo "(debug) CTL_STATUS:${CTL_STATUS}"
+    tdebug "CTL_STATUS:${CTL_STATUS}"
 
     get_sema_status
     local SEMA_STATUS=$?
-    is_debug && echo "(debug) SEMA_STATUS:${SEMA_STATUS}"
+    tdebug "SEMA_STATUS:${SEMA_STATUS}"
 
     local PAIR_STATUS="${CTL_STATUS}:${SEMA_STATUS}"
 
@@ -141,15 +165,17 @@ main() {
       true
       ;;
     "1:0")
+      tmsg "Handling START trigger"
       ./${C_CTL} start
       sleep_settle
       ;;
     "0:1")
+      tmsg "Handling STOP trigger"
       ./${C_CTL} stop
       sleep_settle
       ;;
     *)
-      echo "Error: Invalid PAIR_STATUS: '${PAIR_STATUS}'" >&2
+      terr "Invalid PAIR_STATUS: '${PAIR_STATUS}'"
     esac
 
     sleep_loop
@@ -157,3 +183,9 @@ main() {
 }
 
 main
+
+#
+# Implementation notes:
+#
+# * Main loop behaves like an interactive program.
+#   Thus, all generated output goes to stdout.
