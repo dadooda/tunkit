@@ -5,5 +5,5 @@
 
 C_SEMA="http://site.isp.com/path/to/semaphore"
 
-C_CTL="../rdpctl"
+C_CTL="../rdpa"
 C_PAUSE="5"

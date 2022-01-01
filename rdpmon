@@ -14,7 +14,7 @@ SP=${0%/*}
 set -u -o pipefail
 
 # Data directory.
-DATA="${SP}/${SN}-data"
+DATA="${SP}/${SN}.d"
 
 # WARNING! Cd to data directory and stay there.
 cd "${DATA}" || exit 1

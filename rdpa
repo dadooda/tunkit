@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
 #
-# SOCKS tunnel manager.
-# A step up to `socks`. This one the actual service in the background.
+# Set up reverse tunnel for RDP protocol, automated.
+#
+# IMPORTANT:
+#
+# * Host machine IP changes per every WSL restart, be careful. See `C_L_HOST`.
+# * Make sure the remote SSH server has `GatewayPorts clientspecified` in its
+#   `/etc/ssh/sshd_config`.
 #
 # NOTES:
 #
@@ -17,7 +22,7 @@ SP=${0%/*}
 set -u -o pipefail
 
 # Data, absolute. See notes in `cmd_start`.
-ADATA="`realpath ${SP}`/${SN}-data"
+ADATA="`realpath ${SP}`/${SN}.d"
 
 # WARNING! Cd to data directory and stay there.
 # IMPORTANT! See notes in `cmd_start`.
@@ -101,7 +106,7 @@ cmd_start() {
   # SSH options.
   O=(
     -i ${ADATA}/${C_KEY}
-    -D 0.0.0.0:${C_PORT}
+    -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
     -C -N   # Compress, no shell.
 
     # Connection params.

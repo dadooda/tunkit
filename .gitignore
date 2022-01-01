@@ -6,5 +6,5 @@
 *.ref*
 
 # Project-specific.
-/*-data/*
-!/*-data/conf.sh.example
+/*.d/*
+!/*.d/*.example
