@@ -4,6 +4,7 @@
 #
 
 C_HOST="host.isp.com"
+#C_PORT="50022"
 C_USER="user"
-C_KEY="${C_USER}@${C_HOST}.key"
-C_PORT="1080"
+C_KEY="some.key"
+C_SOCKS_PORT="1080"

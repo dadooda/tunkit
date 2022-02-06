@@ -5,6 +5,9 @@
 /*.patch
 *.ref*
 
+# IDE.
+/*.code-workspace
+
 # Project-specific.
 /*.d/*
 !/*.d/*.example

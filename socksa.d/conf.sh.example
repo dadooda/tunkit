@@ -1,9 +1,0 @@
-
-#
-# Copy this file to `conf.sh` and edit appropriately.
-#
-
-C_HOST="host.isp.com"
-C_USER="user"
-C_KEY="${C_USER}@${C_HOST}.key"
-C_PORT="1080"

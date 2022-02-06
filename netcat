@@ -63,15 +63,23 @@ main() {
     -i ${C_KEY}
     -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
 
+    # Compress.
+    #-C
+
     # No shell.
     -N
 
-    # Options.
-    -o "Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr"
-    -o "Compression no"
+    # Connection params.
     -o "ServerAliveInterval 5"
     -o "ServerAliveCountMax 2"
+    -o "Compression no"
+
+    #-o "Ciphers aes128-gcm@openssh.com"
+    -o "Ciphers aes256-gcm@openssh.com"
+    #-o "Ciphers aes256-ctr"
   )
+
+  [ -n "${C_PORT:-}" ] && O+=( -p ${C_PORT} )
 
   if is_debug; then
     O+=( -v )

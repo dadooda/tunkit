@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+#
+# Set up reverse tunnel for RDP protocol.
+#
+# IMPORTANT:
+#
+# 1. Host machine IP changes per every WSL restart, be careful. See `C_L_HOST`.
+# 2. Make sure the remote SSH server has `GatewayPorts clientspecified`
+#   in its `/etc/ssh/sshd_config`.
+
+ssh_mode_hook() {
+  O+=(
+    -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
+  )
+}
+
+# Use the framework.
+. "${0%/*}/core1.script.sh"

@@ -107,9 +107,13 @@ cmd_start() {
   O=(
     -i ${ADATA}/${C_KEY}
     -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
-    -C -N   # Compress, no shell.
 
-    # Connection params.
+    # No shell.
+    -N
+
+    # Options.
+    -o "Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr"
+    -o "Compression no"
     -o "ServerAliveInterval 5"
     -o "ServerAliveCountMax 2"
   )
