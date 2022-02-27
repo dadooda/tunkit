@@ -20,67 +20,80 @@ cd "${SP}" || exit 1
 # Get the library.
 . lib.sh || exit 1
 
-# Compute data path.
+# Data path.
 DATA="${MN}.d"
 
 #--------------------------------------- Functions
 
-sleep_n_status() {
-  sleep 0.5
-  cmd_status
-}
+if ! function_exists "print_usage"; then
+  print_usage() {
+    echo "USAGE: ${SN} <log|start|status|stop>"
+  }
+fi
+
+if ! function_exists "sleep_n_status" ; then
+  sleep_n_status() {
+    sleep 0.5
+    cmd_status
+  }
+fi
 
 #--------------------------------------- Commands
 
-cmd_log() {
-  set -x
-  tail -f "${DATA}/autossh.log"
-}
+if ! function_exists "cmd_log"; then
+  cmd_log() {
+    set -x
+    tail -f "${DATA}/autossh.log"
+  }
+fi
 
-cmd_start() {
-  BG=! "./${MN}"
-  [ $? = 0 ] && sleep_n_status
-}
+if ! function_exists "cmd_start"; then
+  cmd_start() {
+    BG=! "./${MN}"
+    [ $? = 0 ] && sleep_n_status
+  }
+fi
 
-# Print status. Return 0 if running, 1 otherwise.
-cmd_status() {
-  if is_running; then
-    echo "${P} is running, PID `get_pid`"
+if ! function_exists "cmd_status"; then
+  # Print status. Return 0 if running, 1 otherwise.
+  cmd_status() {
+    if is_pid_alive; then
+      echo "${P} is running, PID `get_pid`"
+    else
+      echo "${P} is not running"
+      false
+    fi
+  }
+fi
+
+if ! function_exists "cmd_stop"; then
+  cmd_stop() {
+    if ! is_pid_alive; then
+      echo "${P} is not running"
+      return 1
+    fi
+
+    echo "Stopping ${P}, PID `get_pid`"
+    kill `get_pid`
+
+    sleep_n_status
+    true
+  }
+fi
+
+#--------------------------------------- Main
+
+main() {
+  CMD="${1:-}"
+
+  if function_exists "cmd_${CMD}"; then
+    cmd_${CMD}
   else
-    echo "${P} is not running"
+    print_usage
     false
   fi
 }
 
-cmd_stop() {
-  if ! is_running; then
-    echo "${P} is not running"
-    return 1
-  fi
-
-  echo "Stopping ${P}, PID `get_pid`"
-  kill `get_pid`
-
-  sleep_n_status
-  true
-}
-
-cmd_usage() {
-  echo "USAGE: ${SN} <log|start|status|stop>"
-}
-
-#--------------------------------------- Main
-
-CMD="${1:-}"
-
-case "$CMD" in
-"log"|"start"|"status"|"stop")
-  cmd_${CMD}
-  ;;
-*)
-  cmd_usage
-  exit 1
-  ;;
-esac
+main "$@"
 
 # No more commands after this line -- retain command result.

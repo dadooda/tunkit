@@ -1,0 +1,6 @@
+
+# Control script or function.
+C_CTL="./rdp-ctl"
+
+# Semaphore.
+C_SEMA_URL="http://site.isp.com/secret/path/rdp"

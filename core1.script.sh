@@ -5,15 +5,6 @@
 # and then source this file as is.
 #
 
-if [ "`type -t ssh_mode_hook`" != "function" ]; then
-  echo "Please define \`ssh_mode_hook()\` in your script. Exiting now" >&2
-  exit 1
-fi
-
-#---------------------------------------
-#--------------------------------------- Actual script
-#---------------------------------------
-
 # Get script name & path.
 SN=${0##*/}
 SP=${0%/*}
@@ -35,10 +26,18 @@ ADATA=`realpath "${DATA}"`
 
 . "${DATA}/conf.sh" || exit 1
 
+#--------------------------------------- Hooks
+
+if ! function_exists "set_ssh_mode" ; then
+  # We basically require the parent script to define this hook in order to make SSH option set mode-meaningful.
+  echo "Please define \`set_ssh_mode()\` in your script. Exiting now" >&2
+  exit 1
+fi
+
 #--------------------------------------- Main
 
 main() {
-  if is_running; then
+  if is_pid_alive; then
     echo "${P} is already running, PID `get_pid`"
     return 2    # Not strictly an error, but not 0 either.
   fi
@@ -53,7 +52,7 @@ main() {
   # SSH options.
   O=()
 
-  ssh_mode_hook
+  set_ssh_mode
 
   O+=(
     -i ${ADATA}/${C_KEY}            # See `Implementation.md` on absolute paths.

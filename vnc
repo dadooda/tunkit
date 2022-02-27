@@ -1,85 +1,19 @@
 #!/usr/bin/env bash
 
 #
-# Set up reverse tunnel for the listeninvg VNC viewer, interactively.
+# Set up reverse tunnel for the listeninvg VNC viewer.
 #
 # IMPORTANT:
 #
-# * Host machine IP changes per every WSL restart, be careful. See `C_L_HOST`.
-# * Make sure the remote SSH server has `GatewayPorts clientspecified`
+# 1. Host machine IP changes per every WSL restart, be careful. See `C_L_HOST`.
+# 2. Make sure the remote SSH server has `GatewayPorts clientspecified`
 #   in its `/etc/ssh/sshd_config`.
-#
-# NOTES:
-#
-# * This is a "chunky Bash" script.
-#
 
-# Get script name & path.
-SN=${0##*/}
-SP=${0%/*}
-
-# Set strict mode.
-set -u -o pipefail
-
-# Data directory.
-DATA="${SP}/${SN}.d"
-
-# WARNING! Cd to data directory and stay there.
-cd "${DATA}" || exit 1
-
-#--------------------------------------- Configuration
-
-. conf.sh || exit 1
-
-#--------------------------------------- Functions
-
-check_key() {
-  if [ ! -r "${C_KEY}" ]; then
-    echo "Error: SSH key not found: ${C_KEY}" >&2
-    return 1
-  fi
-
-  return 0
-}
-
-# Return 0 if debugging is enabled.
-is_debug() {
-  [ "${DEBUG:-''}" = "!" ]
-}
-
-#--------------------------------------- Main
-
-main() {
-  check_key || return 1
-
-  # AutoSSH mode.
-  AM=(
-    # No monitoring.
-    -M 0
-  )
-
-  # SSH options.
-  O=(
-    -i ${C_KEY}
+set_ssh_mode() {
+  O+=(
     -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
-
-    # Compress, no shell.
-    -C -N
-
-    # Connection params.
-    -o "ServerAliveInterval 5"
-    -o "ServerAliveCountMax 2"
   )
-
-  if is_debug; then
-    O+=( -v )
-  else
-    O+=( -q )
-  fi
-
-  echo "Running AutoSSH in the foreground"
-  is_debug && set -x
-  autossh "${AM[@]}" ${C_USER}@${C_HOST} "${O[@]}"
 }
 
-main
+# Use the framework.
+. "${0%/*}/core1.script.sh"
