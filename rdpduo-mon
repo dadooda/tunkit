@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+#
+# Monitor 2 RDP tunnels at once.
+#
+
+#--------------------------------------- Functions
+
+# Run the same subcommand for all tunnels.
+# $1: Subcommand.
+all() {
+  rdp1_ctl "$@"
+  rdp2_ctl "$@"
+}
+
+print_combo_status() {
+  if is_debug; then rdp1_ctl status; else rdp1_ctl status > /dev/null; fi; local R1=$?
+  if is_debug; then rdp2_ctl status; else rdp2_ctl status > /dev/null; fi; local R2=$?
+  echo "${R1},${R2}"
+}
+
+rdp1_ctl() {
+  ./rdp1-ctl "$@" 2>&1 | ppipe "rdp1-ctl: "
+}
+
+rdp2_ctl() {
+  ./rdp2-ctl "$@" 2>&1 | ppipe "rdp2-ctl: "
+}
+
+#--------------------------------------- Hooks
+
+handle_start() {
+  all start
+}
+
+print_status() {
+  all status
+}
+
+handle_stop() {
+  all stop
+}
+
+is_running() {
+  test "`print_combo_status`" = "0,0"
+}
+
+is_stopped() {
+  test "`print_combo_status`" = "1,1"
+}
+
+#--------------------------------------- Main
+
+# Use the framework.
+. "${0%/*}/mon1.script.sh"
