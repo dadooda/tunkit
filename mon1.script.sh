@@ -146,6 +146,7 @@ main() {
       if is_running; then
         is_debug echo "-- Semaphore is up, jobs are running -- nothing to do"
       else
+        echo "Semaphore is up, triggering START"
         handle_start
         sleep_settle
       fi
@@ -153,10 +154,12 @@ main() {
       if is_stopped; then
         is_debug echo "-- Semaphore is down, jobs are stopped -- nothing to do"
       else
+        echo "Semaphore is up, triggering STOP"
         handle_stop
         sleep_settle
       fi
     else
+      # This is an important branch. If there's trouble getting the semaphore, refrain from any kind of action.
       echo "Error: Unknown semaphore status: ${SEMA_STATUS}" >&2
       sleep_settle
     fi
