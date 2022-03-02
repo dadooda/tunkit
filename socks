@@ -4,7 +4,7 @@
 # Set up SOCKS tunnel over SSH.
 #
 
-ssh_mode_hook() {
+set_ssh_mode() {
   O+=(
     -D 0.0.0.0:${C_SOCKS_PORT}
   )

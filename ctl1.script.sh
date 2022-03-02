@@ -23,7 +23,7 @@ cd "${SP}" || exit 1
 # Data path.
 DATA="${MN}.d"
 
-#--------------------------------------- Functions
+#--------------------------------------- Hooks
 
 if ! function_exists "print_usage"; then
   print_usage() {
