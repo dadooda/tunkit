@@ -37,9 +37,19 @@ fi
 #--------------------------------------- Main
 
 main() {
+  # See `Implementation.md` on absolute paths.
+  local KEY_AFN="${ADATA}/${C_KEY}"
+
+  # Make step-by-step configuration a little more explicit. If the key file is missing, SSH messages are fairly blunt.
+  # NOTE: If the key file has bad permissions, SSH messages are very clear.
+  if [ ! -r "${KEY_AFN}" ]; then
+    echo "Error: Key file is not readable: ${KEY_AFN}" >&2
+    return 1
+  fi
+
   if is_pid_alive; then
     echo "${P} is already running, PID `get_pid`"
-    return 2    # Not strictly an error, but not 0 either.
+    return 0
   fi
 
   # AutoSSH options.
@@ -55,7 +65,7 @@ main() {
   set_ssh_mode
 
   O+=(
-    -i ${ADATA}/${C_KEY}            # See `Implementation.md` on absolute paths.
+    -i ${KEY_AFN}
   )
 
   [ -n "${C_PORT:-}" ] && O+=( -p ${C_PORT} )

@@ -22,7 +22,9 @@ DATA="${SN}.d"
 
 #--------------------------------------- Configuration
 
-[ -r "${DATA}/conf.sh" ] && . "${DATA}/conf.sh" || exit 1
+if [ -r "${DATA}/conf.sh" ]; then
+  . "${DATA}/conf.sh" || exit 1
+fi
 
 #--------------------------------------- Functions
 
@@ -141,10 +143,12 @@ main() {
     get_sema_status
     local SEMA_STATUS=$?
     is_debug && echo "-- SEMA_STATUS:${SEMA_STATUS}"
+    is_debug && resx "is_running"
+    is_debug && resx "is_stopped"
 
     if [ $SEMA_STATUS = 0 ]; then
       if is_running; then
-        is_debug echo "-- Semaphore is up, jobs are running -- nothing to do"
+        is_debug && echo "-- Semaphore is up, jobs are running -- nothing to do"
       else
         echo "Semaphore is up, triggering START"
         handle_start
@@ -152,15 +156,15 @@ main() {
       fi
     elif [ $SEMA_STATUS = 1 ]; then
       if is_stopped; then
-        is_debug echo "-- Semaphore is down, jobs are stopped -- nothing to do"
+        is_debug && echo "-- Semaphore is down, jobs are stopped -- nothing to do"
       else
-        echo "Semaphore is up, triggering STOP"
+        echo "Semaphore is down, triggering STOP"
         handle_stop
         sleep_settle
       fi
     else
       # This is an important branch. If there's trouble getting the semaphore, refrain from any kind of action.
-      echo "Error: Unknown semaphore status: ${SEMA_STATUS}" >&2
+      echo "Error: Unknown semaphore status: ${SEMA_STATUS}"
       sleep_settle
     fi
 

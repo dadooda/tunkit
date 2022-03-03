@@ -31,7 +31,7 @@ command_exists() {
 
 # $1: Function name.
 function_exists() {
-  [[ "`type -t ${1}`" = "function" ]]
+  declare -F | egrep -q "declare -f ${1}$"
 }
 
 # Print PID from the file. Return 0 if pidfile exists.
