@@ -10,6 +10,9 @@ P="AutoSSH"
 SSH_TUNNEL_OPTS=(
   -N    # No shell.
 
+  # Disable known interactive prompts.
+  -o "StrictHostKeyChecking no"
+
   # Only use the provided key (indentity) file, let it fail if anything's wrong.
   -o "IdentitiesOnly yes"
   -o "PasswordAuthentication no"
