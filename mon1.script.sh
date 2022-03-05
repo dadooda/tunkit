@@ -135,9 +135,8 @@ fi
 #--------------------------------------- Main
 
 main() {
+  echo "Program started"
   print_status
-
-  echo "Entering main loop"
 
   while true; do
     get_sema_status
