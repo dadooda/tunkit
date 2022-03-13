@@ -1,8 +1,1 @@
-#!/usr/bin/env bash
-
-#
-# Control the named tunnel script.
-#
-
-# Use the framework.
-. "${0%/*}/ctl1.script.sh"
+plain-ctl
