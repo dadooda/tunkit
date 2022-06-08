@@ -3,6 +3,8 @@
 #
 # "Monitor 1" framework. Actual script is expected source this file as is.
 #
+# NOTE: Monitors don't support subcommands like `start`, `stop` etc.
+#   Kill the process directoy by its pidfile.
 
 # Get script name & path.
 SN=${0##*/}
@@ -100,14 +102,14 @@ if ! function_exists "get_sema_status"; then
   }
 fi
 
-if ! function_exists "handle_start"; then
-  handle_start() {
+if ! function_exists "do_start"; then
+  do_start() {
     ${C_CTL} start
   }
 fi
 
-if ! function_exists "handle_stop"; then
-  handle_stop() {
+if ! function_exists "do_stop"; then
+  do_stop() {
     ${C_CTL} stop
   }
 fi
@@ -150,7 +152,7 @@ main() {
         is_debug && echo "-- Semaphore is up, jobs are running -- nothing to do"
       else
         echo "Semaphore is up, triggering START"
-        handle_start
+        do_start
         sleep_settle
       fi
     elif [ $SEMA_STATUS = 1 ]; then
@@ -158,7 +160,7 @@ main() {
         is_debug && echo "-- Semaphore is down, jobs are stopped -- nothing to do"
       else
         echo "Semaphore is down, triggering STOP"
-        handle_stop
+        do_stop
         sleep_settle
       fi
     else

@@ -36,16 +36,16 @@ p3_ctl() {
 
 #--------------------------------------- Hooks
 
-handle_start() {
+do_start() {
   all start
+}
+
+do_stop() {
+  all stop
 }
 
 print_status() {
   all status
-}
-
-handle_stop() {
-  all stop
 }
 
 is_running() {
