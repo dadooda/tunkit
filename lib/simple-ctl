@@ -1,20 +1,14 @@
 #!/usr/bin/env bash
 
 #
-# Set up SOCKS tunnel.
+# Control the named script.
 #
 
 #--------------------------------------- Hooks
 
 P="AutoSSH"
 
-set_ssh_mode() {
-  O+=(
-    -D 0.0.0.0:${C_SOCKS_PORT}
-  )
-}
-
 #--------------------------------------- Main
 
 # Use the framework.
-. "${0%/*}/lib/core1.script.sh"
+. "${0%/*}/lib/ctl1.script.sh"

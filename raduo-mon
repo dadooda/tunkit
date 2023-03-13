@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+#
+# Monitor several RA tunnels at once.
+#
+
+#--------------------------------------- Configuration
+
+ALLSEQ=`seq 1 2`
+c1() { ./ra1-ctl "$@" 2>&1 | ppipe "ra1-ctl: "; }
+c2() { ./ra2-ctl "$@" 2>&1 | ppipe "ra2-ctl: "; }
+# Add `c3()` and edit `ALLSEQ` to control yet another tunnel.
+
+#--------------------------------------- Hooks
+
+P="Monitor"
+
+LOG_BN="monitor.log"
+PID_BN="monitor.pid"
+
+do_start() {
+  all start
+}
+
+do_stop() {
+  all stop
+}
+
+is_running() {
+  print_combo_status | egrep -q '^0{1,}$'
+}
+
+is_stopped() {
+  print_combo_status | egrep -q '^1{1,}$'
+}
+
+print_status() {
+  all status
+}
+
+#--------------------------------------- Functions
+
+# Run the same subcommand ($1) for all tunnels.
+all() {
+  for I in ${ALLSEQ}; do
+    c${I} "$@"
+  done
+}
+
+print_combo_status() {
+  for I in ${ALLSEQ}; do
+    # NOTE: Status command output MUST be muted, otherwise it'll damage the productive output.
+    c${I} status > /dev/null; echo -n $?
+  done
+  echo
+}
+
+#--------------------------------------- Main
+
+# Use the framework.
+. "${0%/*}/lib/mon1.script.sh"

@@ -1,10 +1,6 @@
 
-#
-# Copy this file to `conf.sh` and edit appropriately.
-#
-
 C_HOST="host.isp.com"
-#C_PORT="50022"
+#C_PORT="10022"
 C_USER="user"
 C_KEY="some.key"
 C_SOCKS_PORT="1080"

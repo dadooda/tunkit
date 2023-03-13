@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-#
-# Monitor the named tunnel script.
-#
-
-# Use the framework.
-. "${0%/*}/mon1.script.sh"

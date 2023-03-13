@@ -1,0 +1,3 @@
+
+# Semaphore. Must be HTTPS.
+C_SEMA_URL="https://site.isp.com/secret/path/rdp"

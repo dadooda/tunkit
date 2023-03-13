@@ -1,4 +1,15 @@
 
+# Project-specific.
+/*.d/*
+!/*.d/*.example
+!/*.d/.keep
+/keys/*
+!/keys/*.md
+!/keys/*.example
+
+# Local scripts and data.
+/loc*
+
 # Old etc.
 *.old*
 *.orig
@@ -7,7 +18,3 @@
 
 # IDE.
 /*.code-workspace
-
-# Project-specific.
-/*.d/*
-!/*.d/*.example

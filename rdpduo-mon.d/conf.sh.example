@@ -1,3 +1,0 @@
-
-# Semaphore. Better be HTTPS since some mobile operators inject their ads in 404 Not Found pages.
-C_SEMA_URL="https://site.isp.com/secret/path/rdp"
