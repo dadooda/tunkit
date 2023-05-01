@@ -14,7 +14,7 @@ P="AutoSSH"
 
 set_ssh_mode() {
   O+=(
-    -R 0.0.0.0:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
+    -R ${C_R_HOST:-0.0.0.0}:${C_R_PORT}:${C_L_HOST}:${C_L_PORT}
   )
 }
 
