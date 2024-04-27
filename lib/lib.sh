@@ -102,11 +102,15 @@ tpipe() {
 #
 #   waitsec ".(0|5)"    # Match 00, 05, 10, etc.
 waitsec() {
-  while true; do
-    [ "${BREAK:-}" = "!" ] && break
-    date +%S | egrep -q "$1" && break
-    sleep 0.1
-  done
+  # AF: TODO: Fin.
+  # This thing causes unnecessary system load for no reason. Just wait for about 5 seconds and let go.
+  sleep 5
+
+#  while true; do
+#    [ "${BREAK:-}" = "!" ] && break
+#    date +%S | egrep -q "$1" && break
+#    sleep 0.1
+#  done
 }
 
 #--------------------------------------- Hooks
