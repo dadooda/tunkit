@@ -1066,6 +1066,8 @@ ${EDITOR:-nano} .config/systemd/user/tunkit-socks.service
 
 ```
 
+In the editor, paste or type the following content:
+
 ```
 [Unit]
 Description=Tunkit SOCKS
@@ -1090,6 +1092,13 @@ systemctl --user enable tunkit-socks
 <pre>
 Created symlink /home/joe/.config/systemd/user/default.target.wants/tunkit-socks.service → /home/joe/.config/systemd/user/tunkit-socks.service.
 </pre>
+
+Also, if you're adding the first user service, you need to enable "user lingering", so that the services start while the user isn't logged on.
+To do that, run the following:
+
+```sh
+sudo loginctl enable-linger joe
+```
 
 **Reboot.** After it, check if the service is running:
 
@@ -1508,5 +1517,5 @@ Since I yet don't have reliable answers to the questions above, I refrain from d
 
 The product is free to use by everyone. Feedback of any kind is greatly appreciated.
 
-— © 2021-2023 Alex Fortuna
+— © 2021-2026 Alex Fortuna
 
