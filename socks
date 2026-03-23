@@ -10,7 +10,7 @@ P="AutoSSH"
 
 set_ssh_mode() {
   O+=(
-    -D 0.0.0.0:${C_SOCKS_PORT}
+    -D ${C_SOCKS_HOST:-0.0.0.0}:${C_SOCKS_PORT}
   )
 }
 
