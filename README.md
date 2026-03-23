@@ -488,7 +488,7 @@ Create a config for script `socks` and edit it:
 
 ```sh
 cp -n socks.d/conf.sh.example socks.d/conf.sh &&
-${EDITOR} socks.d/conf.sh
+${EDITOR:-nano} socks.d/conf.sh
 
 ```
 
@@ -616,7 +616,7 @@ Create a config for script `ra` and edit it:
 
 ```sh
 cp -n ra.d/conf.sh.example ra.d/conf.sh &&
-${EDITOR} ra.d/conf.sh
+${EDITOR:-nano} ra.d/conf.sh
 
 ```
 
@@ -721,7 +721,7 @@ Create a config for script `ra` and edit it:
 
 ```sh
 cp -n ra.d/conf.sh.example ra.d/conf.sh &&
-${EDITOR} ra.d/conf.sh
+${EDITOR:-nano} ra.d/conf.sh
 
 ```
 
@@ -824,7 +824,7 @@ Create a config for script `xyz` and edit it:
 
 ```sh
 cp -nt xyz.d ra.d/conf.sh &&
-${EDITOR} xyz.d/conf.sh
+${EDITOR:-nano} xyz.d/conf.sh
 
 ```
 
@@ -922,7 +922,7 @@ Create a config for script `ra-mon` and edit it:
 
 ```sh
 cp -n ra-mon.d/conf.sh.example ra-mon.d/conf.sh &&
-${EDITOR} ra-mon.d/conf.sh
+${EDITOR:-nano} ra-mon.d/conf.sh
 
 ```
 
@@ -1062,7 +1062,7 @@ In `joe`'s home directory, create a unit file for the new `systemd` service:
 ```sh
 cd &&
 mkdir -p .config/systemd/user &&
-${EDITOR} .config/systemd/user/tunkit-socks.service
+${EDITOR:-nano} .config/systemd/user/tunkit-socks.service
 
 ```
 
