@@ -155,7 +155,7 @@ fi
 if ! function_exists "sleep_idle"; then
   # Sleep in the main loop.
   sleep_idle() {
-    waitsec ".(0|5)"
+    sleep 5
   }
 fi
 

@@ -102,6 +102,11 @@ tpipe() {
 #
 #   waitsec ".(0|5)"    # Match 00, 05, 10, etc.
 waitsec() {
+  # NOTE: Existing implementation has this issue. Better not use until a better solution is designed.
+  echo "I'm disabled due to excessive resource usage"
+  sleep 5
+  return 1
+
   while true; do
     [ "${BREAK:-}" = "!" ] && break
     date +%S | egrep -q "$1" && break
